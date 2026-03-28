@@ -1,3 +1,4 @@
+use crate::services::commands::run_command_blocking;
 use crate::services::config::AppConfig;
 
 const SRGB_ICM: &[u8] = include_bytes!("../../../assets/icm/ASUS_sRGB.icm");
@@ -19,8 +20,11 @@ pub(crate) async fn setup_icm_profiles() -> Result<std::path::PathBuf, String> {
             ("ASUS_DCIP3.icm", DCIP3_ICM),
             ("ASUS_DisplayP3.icm", DISPLAYP3_ICM),
         ] {
-            std::fs::write(basis_clone.join(name), data)
-                .map_err(|e| format!("ICM-Profil '{name}' schreiben fehlgeschlagen: {e}"))?;
+            let pfad = basis_clone.join(name);
+            if !pfad.exists() {
+                std::fs::write(&pfad, data)
+                    .map_err(|e| format!("ICM-Profil '{name}' schreiben fehlgeschlagen: {e}"))?;
+            }
         }
         Ok::<(), String>(())
     })
@@ -31,57 +35,29 @@ pub(crate) async fn setup_icm_profiles() -> Result<std::path::PathBuf, String> {
 }
 
 pub(crate) async fn icm_profil_reset() -> Result<(), String> {
-    let result = tokio::task::spawn_blocking(|| {
-        std::process::Command::new("kscreen-doctor")
-            .arg("output.eDP-1.colorProfileSource.EDID")
-            .status()
-    })
-    .await;
-
-    match result {
-        Ok(Ok(status)) if status.success() => Ok(()),
-        Ok(Ok(status)) => Err(format!(
-            "kscreen-doctor profile.reset fehlgeschlagen mit Exit-Code: {}",
-            status.code().unwrap_or(-1)
-        )),
-        Ok(Err(e)) => Err(format!("kscreen-doctor starten fehlgeschlagen: {e}")),
-        Err(e) => Err(format!("spawn_blocking fehlgeschlagen: {e}")),
-    }
+    run_command_blocking("kscreen-doctor", &["output.eDP-1.colorProfileSource.EDID"]).await
 }
 
 pub(crate) async fn icm_profil_anwenden(
     dateiname: &str,
     basis_pfad: &std::path::Path,
 ) -> Result<(), String> {
-    let absoluter_pfad = basis_pfad.join(dateiname);
-    let arg = format!("output.eDP-1.iccprofile.{}", absoluter_pfad.display());
-
-    let result = tokio::task::spawn_blocking(move || {
-        std::process::Command::new("kscreen-doctor")
-            .arg(&arg)
-            .status()
-    })
-    .await;
-
-    match result {
-        Ok(Ok(status)) if status.success() => Ok(()),
-        Ok(Ok(status)) => Err(format!(
-            "kscreen-doctor fehlgeschlagen mit Exit-Code: {}",
-            status.code().unwrap_or(-1)
-        )),
-        Ok(Err(e)) => Err(format!("kscreen-doctor starten fehlgeschlagen: {e}")),
-        Err(e) => Err(format!("spawn_blocking fehlgeschlagen: {e}")),
-    }
+    let arg = format!(
+        "output.eDP-1.iccprofile.{}",
+        basis_pfad.join(dateiname).display()
+    );
+    run_command_blocking("kscreen-doctor", &[&arg]).await
 }
 
 /// Fallback: versucht qdbus-qt6, dann qdbus.
 pub(crate) async fn qdbus_ausfuehren(args: Vec<String>) -> Result<(), String> {
     let result = tokio::task::spawn_blocking(move || {
-        let status = std::process::Command::new("qdbus-qt6").args(&args).status();
+        let status = std::process::Command::new("qdbus-qt6")
+            .args(&args)
+            .status();
         match status {
             Ok(s) => Ok(("qdbus-qt6", s)),
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-                // Fallback auf qdbus
                 std::process::Command::new("qdbus")
                     .args(&args)
                     .status()
@@ -104,21 +80,5 @@ pub(crate) async fn qdbus_ausfuehren(args: Vec<String>) -> Result<(), String> {
 }
 
 pub(crate) async fn kwriteconfig_ausfuehren(args: &[&str]) -> Result<(), String> {
-    let args: Vec<String> = args.iter().map(|s| s.to_string()).collect();
-    let result = tokio::task::spawn_blocking(move || {
-        std::process::Command::new("kwriteconfig6")
-            .args(&args)
-            .status()
-    })
-    .await;
-
-    match result {
-        Ok(Ok(status)) if status.success() => Ok(()),
-        Ok(Ok(status)) => Err(format!(
-            "kwriteconfig6 fehlgeschlagen mit Exit-Code: {}",
-            status.code().unwrap_or(-1)
-        )),
-        Ok(Err(e)) => Err(format!("kwriteconfig6 starten fehlgeschlagen: {e}")),
-        Err(e) => Err(format!("spawn_blocking fehlgeschlagen: {e}")),
-    }
+    run_command_blocking("kwriteconfig6", args).await
 }

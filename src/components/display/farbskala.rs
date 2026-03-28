@@ -130,7 +130,9 @@ impl Component for FarbskalaModel {
         match msg {
             FarbskalaCommandOutput::IcmBereit(pfad) => {
                 eprintln!("ICM-Profile bereit unter {}", pfad.display());
-                profil_anwenden(self.farbskala_index, pfad.clone(), &sender);
+                if self.farbskala_index > 0 {
+                    profil_anwenden(self.farbskala_index, pfad.clone(), &sender);
+                }
                 self.icm_basis_pfad = Some(pfad);
             }
             FarbskalaCommandOutput::ProfilAngewendet(index) => {

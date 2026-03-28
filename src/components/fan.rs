@@ -5,6 +5,7 @@ use relm4::prelude::*;
 
 use crate::backend::dbus;
 use crate::backend::dbus::FanProfile;
+use crate::services::commands::pkexec_shell;
 use crate::services::config::AppConfig;
 
 pub struct FanModel {
@@ -175,37 +176,10 @@ impl Component for FanModel {
                 sender.command(move |out, shutdown| {
                     shutdown
                         .register(async move {
-                            let result = tokio::task::spawn_blocking(move || {
-                                std::process::Command::new("pkexec")
-                                    .args([
-                                        "sh",
-                                        "-c",
-                                        &format!("echo {wert} > /sys/power/mem_sleep"),
-                                    ])
-                                    .status()
-                            })
-                            .await;
-
-                            match result {
-                                Ok(Ok(status)) if status.success() => {
-                                    out.emit(FanCommandOutput::TiefschlafGesetzt(aktiv));
-                                }
-                                Ok(Ok(status)) => {
-                                    out.emit(FanCommandOutput::Fehler(format!(
-                                        "pkexec fehlgeschlagen mit Exit-Code: {}",
-                                        status.code().unwrap_or(-1)
-                                    )));
-                                }
-                                Ok(Err(e)) => {
-                                    out.emit(FanCommandOutput::Fehler(format!(
-                                        "pkexec starten fehlgeschlagen: {e}"
-                                    )));
-                                }
-                                Err(e) => {
-                                    out.emit(FanCommandOutput::Fehler(format!(
-                                        "spawn_blocking fehlgeschlagen: {e}"
-                                    )));
-                                }
+                            let cmd = format!("echo {wert} > /sys/power/mem_sleep");
+                            match pkexec_shell(&cmd).await {
+                                Ok(()) => out.emit(FanCommandOutput::TiefschlafGesetzt(aktiv)),
+                                Err(e) => out.emit(FanCommandOutput::Fehler(e)),
                             }
                         })
                         .drop_on_shutdown()

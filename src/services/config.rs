@@ -2,7 +2,7 @@ use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 use std::fs;
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Default, Serialize, Deserialize, Clone)]
 pub struct AppConfig {
     pub farbskala_index: u32,
     pub zielmodus_aktiv: bool,
@@ -11,22 +11,6 @@ pub struct AppConfig {
     pub oled_care_transparenz: bool,
     pub fan_tiefschlaf_aktiv: bool,
     pub input_gesten_aktiv: bool,
-    pub fn_key_gesperrt: bool,
-}
-
-impl Default for AppConfig {
-    fn default() -> Self {
-        Self {
-            farbskala_index: 0,
-            zielmodus_aktiv: false,
-            oled_care_pixel_refresh: false,
-            oled_care_panel_autohide: false,
-            oled_care_transparenz: false,
-            fan_tiefschlaf_aktiv: false,
-            input_gesten_aktiv: false,
-            fn_key_gesperrt: false,
-        }
-    }
 }
 
 impl AppConfig {

@@ -3,7 +3,7 @@ use relm4::adw;
 use relm4::adw::prelude::*;
 use relm4::prelude::*;
 
-use crate::services::config::AppConfig;
+use crate::services::commands::pkexec_shell;
 
 pub struct FnKeyModel {
     gesperrt: bool,
@@ -139,48 +139,19 @@ impl Component for FnKeyModel {
                 }
                 self.gesperrt = gesperrt;
 
-                AppConfig::update(|c| c.fn_key_gesperrt = gesperrt);
-
                 let wert = if gesperrt { 1 } else { 0 };
                 sender.command(move |out, shutdown| {
                     shutdown
                         .register(async move {
-                            let result = tokio::task::spawn_blocking(move || {
-                                // Zuerst Live-Änderung versuchen (2>/dev/null, Fehler ignorieren),
-                                // dann Modprobe-Datei für Persistenz nach Neustart schreiben.
-                                std::process::Command::new("pkexec")
-                                    .args([
-                                        "sh",
-                                        "-c",
-                                        &format!(
-                                            "echo {wert} > {SYSFS_PFAD} 2>/dev/null; \
-                                             echo 'options asus_wmi fnlock_default={wert}' > {MODPROBE_PFAD}"
-                                        ),
-                                    ])
-                                    .status()
-                            })
-                            .await;
-
-                            match result {
-                                Ok(Ok(status)) if status.success() => {
-                                    out.emit(FnKeyCommandOutput::Gesetzt(gesperrt));
-                                }
-                                Ok(Ok(status)) => {
-                                    out.emit(FnKeyCommandOutput::Fehler(format!(
-                                        "pkexec fehlgeschlagen mit Exit-Code: {}",
-                                        status.code().unwrap_or(-1)
-                                    )));
-                                }
-                                Ok(Err(e)) => {
-                                    out.emit(FnKeyCommandOutput::Fehler(format!(
-                                        "pkexec starten fehlgeschlagen: {e}"
-                                    )));
-                                }
-                                Err(e) => {
-                                    out.emit(FnKeyCommandOutput::Fehler(format!(
-                                        "spawn_blocking fehlgeschlagen: {e}"
-                                    )));
-                                }
+                            // Live-Änderung versuchen (Fehler ignorieren),
+                            // dann Modprobe-Datei für Persistenz nach Neustart.
+                            let cmd = format!(
+                                "echo {wert} > {SYSFS_PFAD} 2>/dev/null; \
+                                 echo 'options asus_wmi fnlock_default={wert}' > {MODPROBE_PFAD}"
+                            );
+                            match pkexec_shell(&cmd).await {
+                                Ok(()) => out.emit(FnKeyCommandOutput::Gesetzt(gesperrt)),
+                                Err(e) => out.emit(FnKeyCommandOutput::Fehler(e)),
                             }
                         })
                         .drop_on_shutdown()

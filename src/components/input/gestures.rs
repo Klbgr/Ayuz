@@ -5,6 +5,7 @@ use relm4::adw;
 use relm4::adw::prelude::*;
 use relm4::prelude::*;
 
+use crate::services::commands::run_command_blocking;
 use crate::services::config::AppConfig;
 
 pub struct GesturenModel {
@@ -119,47 +120,24 @@ impl Component for GesturenModel {
                     shutdown
                         .register(async move {
                             if aktiv {
-                                let konfig_pfad = BaseDirs::new().and_then(|d| {
-                                    Some(d.config_dir().join("libinput-gestures.conf"))
-                                });
+                                let konfig_pfad = BaseDirs::new()
+                                    .map(|d| d.config_dir().join("libinput-gestures.conf"));
 
-                                if let Some(pfad) = konfig_pfad {
-                                    if let Err(e) = tokio::fs::write(&pfad, GESTEN_KONFIG).await {
-                                        eprintln!(
-                                            "libinput-gestures.conf schreiben fehlgeschlagen: {e}"
-                                        );
-                                    }
+                                if let Some(pfad) = konfig_pfad
+                                    && let Err(e) = tokio::fs::write(&pfad, GESTEN_KONFIG).await
+                                {
+                                    out.emit(GesturenCommandOutput::Fehler(format!(
+                                        "libinput-gestures.conf schreiben fehlgeschlagen: {e}"
+                                    )));
+                                    return;
                                 }
                             }
 
-                            let ergebnis = tokio::task::spawn_blocking(move || {
-                                std::process::Command::new("libinput-gestures-setup")
-                                    .arg(if aktiv { "restart" } else { "stop" })
-                                    .status()
-                            })
-                            .await;
-
-                            match ergebnis {
-                                Ok(Ok(status)) if status.success() => {
-                                    eprintln!(
-                                        "libinput-gestures-setup {} erfolgreich",
-                                        if aktiv { "restart" } else { "stop" }
-                                    );
-                                }
-                                Ok(Ok(status)) => {
-                                    eprintln!(
-                                        "libinput-gestures-setup fehlgeschlagen (Exit-Code: {})",
-                                        status.code().unwrap_or(-1)
-                                    );
-                                }
-                                Ok(Err(e)) => {
-                                    eprintln!("libinput-gestures-setup nicht gefunden: {e}");
-                                }
-                                Err(e) => {
-                                    out.emit(GesturenCommandOutput::Fehler(format!(
-                                        "spawn_blocking fehlgeschlagen: {e}"
-                                    )));
-                                }
+                            let arg = if aktiv { "restart" } else { "stop" };
+                            if let Err(e) =
+                                run_command_blocking("libinput-gestures-setup", &[arg]).await
+                            {
+                                out.emit(GesturenCommandOutput::Fehler(e));
                             }
                         })
                         .drop_on_shutdown()
