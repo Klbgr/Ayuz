@@ -116,6 +116,21 @@ error_mem_sleep_read: "mem_sleep lesen fehlgeschlagen: %{error}"
 battery_deep_sleep_set: "Tiefschlafhilfe auf %{value} gesetzt"
 battery_charge_limit_set: "Ladelimit auf %{value}% gesetzt"
 
+# audio
+tab_audio: "Audio & Mikrofon"
+audio_profiles_title: "Sound-Profile"
+audio_profiles_desc: "Erfordert EasyEffects. Profile werden beim Start automatisch installiert."
+audio_profile_label: "Aktuelles Profil"
+audio_profile_film: "Film"
+audio_profile_musik: "Musik"
+audio_profile_none: "None"
+audio_profile_optimiert: "Optimiert"
+audio_profile_video: "Video"
+audio_profile_sprache: "Stimme"
+ee_missing_warning: "EasyEffects ist nicht installiert. Profilwechsel nicht möglich."
+audio_preset_install_error: "Preset installieren fehlgeschlagen: %{error}"
+audio_profile_set: "Audio-Profil auf %{profile} gesetzt"
+
 # fan
 fan_group_title: "Lüftermodus"
 fan_performance_title: "Leistungsmodus"

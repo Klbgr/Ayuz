@@ -1,3 +1,4 @@
+use crate::components::audio::SoundModesModel;
 use crate::components::display::FarbskalaModel;
 use crate::components::display::OledCareModel;
 use crate::components::keyboard::AutoBeleuchtungModel;
@@ -33,6 +34,7 @@ pub struct AppModel {
     touchpad: Controller<TouchpadModel>,
     auto_beleuchtung: Controller<AutoBeleuchtungModel>,
     ruhezustand: Controller<RuhezustandModel>,
+    sound_modes: Controller<SoundModesModel>,
 }
 
 #[relm4::component(pub)]
@@ -122,6 +124,9 @@ impl SimpleComponent for AppModel {
         let ruhezustand = RuhezustandModel::builder()
             .launch(())
             .forward(sender.input_sender(), fehler);
+        let sound_modes = SoundModesModel::builder()
+            .launch(())
+            .forward(sender.input_sender(), fehler);
 
         let tray_svc = ksni::TrayService::new(tray::ZenbookTray {
             app_sender: sender.input_sender().clone(),
@@ -144,6 +149,7 @@ impl SimpleComponent for AppModel {
             touchpad,
             auto_beleuchtung,
             ruhezustand,
+            sound_modes,
         };
 
         let battery_widget = model.battery.widget();
@@ -155,6 +161,7 @@ impl SimpleComponent for AppModel {
         let touchpad_widget = model.touchpad.widget();
         let auto_beleuchtung_widget = model.auto_beleuchtung.widget();
         let ruhezustand_widget = model.ruhezustand.widget();
+        let sound_modes_widget = model.sound_modes.widget();
 
         let my_stack = adw::ViewStack::new();
 
@@ -174,6 +181,13 @@ impl SimpleComponent for AppModel {
             None,
             &t!("tab_keyboard"),
             "input-keyboard-symbolic",
+        );
+
+        my_stack.add_titled_with_icon(
+            sound_modes_widget,
+            None,
+            &t!("tab_audio"),
+            "audio-headset-symbolic",
         );
 
         let system_page = adw::PreferencesPage::new();
@@ -223,10 +237,7 @@ impl SimpleComponent for AppModel {
 
         let widgets = view_output!();
 
-        root.connect_close_request(|window| {
-            window.set_visible(false);
-            gtk4::glib::Propagation::Stop
-        });
+        root.set_hide_on_close(true);
 
         ComponentParts { model, widgets }
     }
