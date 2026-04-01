@@ -4,7 +4,7 @@ use tokio::sync::watch;
 /// Fraction of touchpad width/height that counts as an edge zone (4%)
 const EDGE_PERCENT: f64 = 0.04;
 /// Minimum movement in touchpad units required to trigger an action
-const STEP_THRESHOLD: i32 = 60;
+const STEP_THRESHOLD: i32 = 300;
 
 enum GestureState {
     Idle,
