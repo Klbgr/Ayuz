@@ -59,7 +59,14 @@ async fn run_action(program: &str, args: &[&str]) {
         .status()
         .await;
     if let Err(e) = result {
-        eprintln!("{}", t!("error_gesture_action", program = program, error = e.to_string()));
+        eprintln!(
+            "{}",
+            t!(
+                "error_gesture_action",
+                program = program,
+                error = e.to_string()
+            )
+        );
     }
 }
 

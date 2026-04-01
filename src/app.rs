@@ -1,4 +1,5 @@
 use crate::components::audio::SoundModesModel;
+use crate::components::audio::VolumeModel;
 use crate::components::display::FarbskalaModel;
 use crate::components::display::OledCareModel;
 use crate::components::keyboard::AutoBeleuchtungModel;
@@ -35,6 +36,7 @@ pub struct AppModel {
     auto_beleuchtung: Controller<AutoBeleuchtungModel>,
     ruhezustand: Controller<RuhezustandModel>,
     sound_modes: Controller<SoundModesModel>,
+    volume_widget: Controller<VolumeModel>,
 }
 
 #[relm4::component(pub)]
@@ -127,6 +129,9 @@ impl SimpleComponent for AppModel {
         let sound_modes = SoundModesModel::builder()
             .launch(())
             .forward(sender.input_sender(), fehler);
+        let volume_widget = VolumeModel::builder()
+            .launch(())
+            .forward(sender.input_sender(), fehler);
 
         let tray_svc = ksni::TrayService::new(tray::ZenbookTray {
             app_sender: sender.input_sender().clone(),
@@ -150,6 +155,7 @@ impl SimpleComponent for AppModel {
             auto_beleuchtung,
             ruhezustand,
             sound_modes,
+            volume_widget,
         };
 
         let battery_widget = model.battery.widget();
@@ -162,6 +168,7 @@ impl SimpleComponent for AppModel {
         let auto_beleuchtung_widget = model.auto_beleuchtung.widget();
         let ruhezustand_widget = model.ruhezustand.widget();
         let sound_modes_widget = model.sound_modes.widget();
+        let volume_widget = model.volume_widget.widget();
 
         let my_stack = adw::ViewStack::new();
 
@@ -183,8 +190,11 @@ impl SimpleComponent for AppModel {
             "input-keyboard-symbolic",
         );
 
+        let audio_page = adw::PreferencesPage::new();
+        audio_page.add(volume_widget);
+        audio_page.add(sound_modes_widget);
         my_stack.add_titled_with_icon(
-            sound_modes_widget,
+            &audio_page,
             None,
             &t!("tab_audio"),
             "audio-headset-symbolic",

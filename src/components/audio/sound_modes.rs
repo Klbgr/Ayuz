@@ -30,6 +30,7 @@ pub struct SoundModesModel {
     ee_installiert: bool,
     aktuelles_profil: u32,
     dropdown: gtk::DropDown,
+    beschreibung: String,
 }
 
 #[derive(Debug)]
@@ -53,25 +54,15 @@ impl Component for SoundModesModel {
     type CommandOutput = AudioCommandOutput;
 
     view! {
-        adw::ToolbarView {
-            add_top_bar = &adw::Banner {
-                set_title: &t!("ee_missing_warning"),
-                #[watch]
-                set_revealed: !model.ee_installiert,
-            },
+        adw::PreferencesGroup {
+            set_title: &t!("audio_profiles_title"),
+            #[watch]
+            set_description: Some(model.beschreibung.as_str()),
 
-            #[wrap(Some)]
-            set_content = &adw::PreferencesPage {
-                add = &adw::PreferencesGroup {
-                    set_title: &t!("audio_profiles_title"),
-                    set_description: Some(&t!("audio_profiles_desc")),
-
-                    add = &adw::ActionRow {
-                        set_title: &t!("audio_profile_label"),
-                        add_suffix = &model.dropdown.clone(),
-                        set_activatable_widget: Some(&model.dropdown),
-                    },
-                },
+            add = &adw::ActionRow {
+                set_title: &t!("audio_profile_label"),
+                add_suffix = &model.dropdown.clone(),
+                set_activatable_widget: Some(&model.dropdown),
             },
         }
     }
@@ -107,6 +98,7 @@ impl Component for SoundModesModel {
             ee_installiert: false,
             aktuelles_profil: config.audio_profil,
             dropdown,
+            beschreibung: t!("audio_profiles_desc").to_string(),
         };
 
         let widgets = view_output!();
@@ -180,6 +172,11 @@ impl Component for SoundModesModel {
             AudioCommandOutput::EeGeprueft(installiert) => {
                 self.ee_installiert = installiert;
                 self.dropdown.set_sensitive(installiert);
+                self.beschreibung = if installiert {
+                    t!("audio_profiles_desc").to_string()
+                } else {
+                    t!("ee_missing_warning").to_string()
+                };
             }
             AudioCommandOutput::PresetsInstalliert => {
                 eprintln!("Audio-Presets installiert.");
