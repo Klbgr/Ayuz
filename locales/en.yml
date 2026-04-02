@@ -53,9 +53,7 @@ zielmodus_group_desc: "Dims inactive windows while the focused window stays at f
 zielmodus_kde_required: "* Requires KDE Plasma. This feature uses the KWin compositor effect 'Dim Inactive' and is not available on other desktop environments."
 zielmodus_switch_title: "Enable Target Mode"
 zielmodus_switch_subtitle: "Activates the KWin Dim Inactive compositor effect."
-zielmodus_strength_title: "Dimming Strength"
 zielmodus_aktiv_set: "Target Mode set to %{value}"
-zielmodus_staerke_set: "Dim Inactive strength set to %{value}%"
 
 # oled_care
 oled_care_group_title: "ASUS OLED Care"

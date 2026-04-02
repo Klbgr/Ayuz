@@ -53,9 +53,7 @@ zielmodus_group_desc: "Dunkelt inaktive Fenster ab, während das fokussierte Fen
 zielmodus_kde_required: "* Erfordert KDE Plasma. Dieses Feature nutzt den KWin-Compositor-Effekt 'Inaktiv abdunkeln' und ist unter anderen Desktop-Umgebungen nicht verfügbar."
 zielmodus_switch_title: "Zielmodus aktivieren"
 zielmodus_switch_subtitle: "Aktiviert den KWin-Effekt 'Inaktiv abdunkeln'."
-zielmodus_strength_title: "Abdunklungsstärke"
 zielmodus_aktiv_set: "Zielmodus auf %{value} gesetzt"
-zielmodus_staerke_set: "Abdunklungsstärke auf %{value}% gesetzt"
 
 # oled_care
 oled_care_group_title: "ASUS OLED Care"

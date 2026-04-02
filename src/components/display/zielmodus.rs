@@ -1,4 +1,3 @@
-use gtk4 as gtk;
 use relm4::adw;
 use relm4::adw::prelude::*;
 use relm4::prelude::*;
@@ -9,20 +8,17 @@ use crate::services::config::AppConfig;
 
 pub struct ZielmodusModel {
     aktiv: bool,
-    staerke: u32,
     kde_verfuegbar: bool,
 }
 
 #[derive(Debug)]
 pub enum ZielmodusMsg {
     AktivSetzen(bool),
-    StaerkeSetzen(u32),
 }
 
 #[derive(Debug)]
 pub enum ZielmodusCommandOutput {
     AktivGesetzt(bool),
-    StaerkeGesetzt(u32),
     Fehler(String),
 }
 
@@ -63,32 +59,6 @@ impl Component for ZielmodusModel {
                     sender.input(ZielmodusMsg::AktivSetzen(switch.is_active()));
                 },
             },
-
-            add = &adw::ActionRow {
-                set_title: &t!("zielmodus_strength_title"),
-
-                #[watch]
-                set_sensitive: model.aktiv && model.kde_verfuegbar,
-
-                add_suffix = &gtk::Scale {
-                    set_orientation: gtk::Orientation::Horizontal,
-                    set_range: (0.0, 100.0),
-                    set_increments: (5.0, 10.0),
-                    set_round_digits: 0,
-                    set_value: model.staerke as f64,
-                    set_width_request: 200,
-                    connect_value_changed[sender] => move |scale| {
-                        sender.input(ZielmodusMsg::StaerkeSetzen(scale.value() as u32));
-                    },
-                },
-
-                add_suffix = &gtk::Label {
-                    #[watch]
-                    set_label: &format!("{}%", model.staerke),
-                    set_width_chars: 4,
-                    set_xalign: 1.0,
-                },
-            },
         }
     }
 
@@ -100,22 +70,18 @@ impl Component for ZielmodusModel {
         let mut config = AppConfig::load();
         let kde_verfuegbar = ist_kde();
 
-        let (aktiv, staerke) = if kde_verfuegbar {
+        let aktiv = if kde_verfuegbar {
             let a =
                 lese_kwin_bool("Plugins", "diminactiveEnabled").unwrap_or(config.zielmodus_aktiv);
-            let s = lese_kwin_u32("Effect-DimInactive", "Strength", config.zielmodus_staerke)
-                .unwrap_or(config.zielmodus_staerke);
             config.zielmodus_aktiv = a;
-            config.zielmodus_staerke = s;
             config.save();
-            (a, s)
+            a
         } else {
-            (config.zielmodus_aktiv, config.zielmodus_staerke)
+            config.zielmodus_aktiv
         };
 
         let model = ZielmodusModel {
             aktiv,
-            staerke,
             kde_verfuegbar,
         };
         let widgets = view_output!();
@@ -142,24 +108,6 @@ impl Component for ZielmodusModel {
                         .drop_on_shutdown()
                 });
             }
-            ZielmodusMsg::StaerkeSetzen(staerke) => {
-                if staerke == self.staerke {
-                    return;
-                }
-                self.staerke = staerke;
-                AppConfig::update(|c| c.zielmodus_staerke = staerke);
-
-                sender.command(move |out, shutdown| {
-                    shutdown
-                        .register(async move {
-                            match kwin_staerke_setzen(staerke).await {
-                                Ok(()) => out.emit(ZielmodusCommandOutput::StaerkeGesetzt(staerke)),
-                                Err(e) => out.emit(ZielmodusCommandOutput::Fehler(e)),
-                            }
-                        })
-                        .drop_on_shutdown()
-                });
-            }
         }
     }
 
@@ -172,12 +120,6 @@ impl Component for ZielmodusModel {
         match msg {
             ZielmodusCommandOutput::AktivGesetzt(aktiv) => {
                 eprintln!("{}", t!("zielmodus_aktiv_set", value = aktiv.to_string()));
-            }
-            ZielmodusCommandOutput::StaerkeGesetzt(staerke) => {
-                eprintln!(
-                    "{}",
-                    t!("zielmodus_staerke_set", value = staerke.to_string())
-                );
             }
             ZielmodusCommandOutput::Fehler(e) => {
                 let _ = sender.output(e);
@@ -211,28 +153,6 @@ async fn kwin_effekt_setzen(aktiv: bool) -> Result<(), String> {
     .await
 }
 
-async fn kwin_staerke_setzen(staerke: u32) -> Result<(), String> {
-    let staerke_str = staerke.to_string();
-    kwriteconfig_ausfuehren(&[
-        "--file",
-        "kwinrc",
-        "--group",
-        "Effect-DimInactive",
-        "--key",
-        "Strength",
-        &staerke_str,
-    ])
-    .await?;
-
-    qdbus_ausfuehren(vec![
-        "org.kde.KWin".to_string(),
-        "/Effects".to_string(),
-        "reconfigureEffect".to_string(),
-        "diminactive".to_string(),
-    ])
-    .await
-}
-
 fn ist_kde() -> bool {
     std::env::var("XDG_CURRENT_DESKTOP")
         .map(|v| v.to_uppercase().contains("KDE"))
@@ -257,22 +177,4 @@ fn lese_kwin_bool(group: &str, key: &str) -> Option<bool> {
         .trim()
         .to_lowercase();
     Some(s == "true")
-}
-
-fn lese_kwin_u32(group: &str, key: &str, default: u32) -> Option<u32> {
-    let default_str = default.to_string();
-    let output = std::process::Command::new("kreadconfig6")
-        .args([
-            "--file",
-            "kwinrc",
-            "--group",
-            group,
-            "--key",
-            key,
-            "--default",
-            &default_str,
-        ])
-        .output()
-        .ok()?;
-    String::from_utf8_lossy(&output.stdout).trim().parse().ok()
 }
