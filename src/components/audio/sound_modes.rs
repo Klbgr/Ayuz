@@ -29,6 +29,7 @@ const PRESETS: &[(&str, &str)] = &[
 const NONE_IDX: u32 = 2;
 const CUSTOM_IDX: u32 = 6;
 const PRESET_NAMEN: &[&str] = &["Movie", "Music", "Perfect_EQ", "Video", "Voice"];
+const EASYEFFECTS_STARTUP_DELAY_MS: u64 = 1500;
 
 pub struct SoundModesModel {
     ee_installiert: bool,
@@ -195,7 +196,7 @@ impl Component for SoundModesModel {
                 sender.command(move |out, shutdown| {
                     shutdown
                         .register(async move {
-                            if let Err(e) = easyeffects_profil_setzen(idx).await {
+                            if let Err(e) = easyeffects_profil_setzen(idx, None).await {
                                 out.emit(AudioCommandOutput::Fehler(e));
                                 return;
                             }
@@ -206,16 +207,14 @@ impl Component for SoundModesModel {
             }
 
             AudioMsg::CustomPresetPfadGewaehlt(path) => {
-                let name = path
-                    .file_stem()
-                    .map(|s| s.to_string_lossy().to_string())
-                    .unwrap_or_default();
-                if name.is_empty() {
-                    sender.input(AudioMsg::CustomAbgebrochen(self.vorheriges_profil));
-                    return;
-                }
+                let name = match extract_file_stem(&path) {
+                    Ok(n) => n,
+                    Err(_) => {
+                        sender.input(AudioMsg::CustomAbgebrochen(self.vorheriges_profil));
+                        return;
+                    }
+                };
 
-                self.vorheriges_profil = CUSTOM_IDX;
                 AppConfig::update(|c| {
                     c.audio_profil = CUSTOM_IDX;
                     c.custom_preset_name = Some(name.clone());
@@ -257,9 +256,7 @@ impl Component for SoundModesModel {
                     t!("ee_missing_warning").to_string()
                 };
             }
-            AudioCommandOutput::PresetsInstalliert => {
-                eprintln!("Audio-Presets installiert.");
-            }
+            AudioCommandOutput::PresetsInstalliert => {}
             AudioCommandOutput::ProfilGesetzt(idx) => {
                 eprintln!("{}", t!("audio_profile_set", profile = idx));
             }
@@ -273,8 +270,7 @@ impl Component for SoundModesModel {
     }
 }
 
-async fn easyeffects_profil_setzen(idx: u32) -> Result<(), String> {
-    // Prüfen ob der Daemon bereits läuft
+async fn ensure_easyeffects_running() {
     let daemon_laeuft = tokio::task::spawn_blocking(|| {
         std::process::Command::new("pgrep")
             .args(["-x", "easyeffects"])
@@ -286,18 +282,31 @@ async fn easyeffects_profil_setzen(idx: u32) -> Result<(), String> {
     .unwrap_or(false);
 
     if !daemon_laeuft {
-        // Daemon non-blocking starten (kein GUI, nur Service)
         let _ = tokio::process::Command::new("easyeffects")
             .arg("--gapplication-service")
             .spawn();
-        // Warten bis der Daemon bereit ist
-        tokio::time::sleep(tokio::time::Duration::from_millis(1500)).await;
+        tokio::time::sleep(tokio::time::Duration::from_millis(EASYEFFECTS_STARTUP_DELAY_MS)).await;
     }
+}
+
+fn easyeffects_output_dir() -> Result<PathBuf, String> {
+    let home = std::env::var("HOME").map_err(|e| e.to_string())?;
+    Ok(PathBuf::from(home).join(".config/easyeffects/output"))
+}
+
+fn extract_file_stem(path: &std::path::Path) -> Result<String, String> {
+    path.file_stem()
+        .map(|s| s.to_string_lossy().to_string())
+        .ok_or_else(|| "Invalid file name".to_string())
+}
+
+async fn easyeffects_profil_setzen(idx: u32, custom_name: Option<String>) -> Result<(), String> {
+    ensure_easyeffects_running().await;
 
     if idx == NONE_IDX {
         run_command_blocking("easyeffects", &["-b", "1"]).await?;
     } else if idx == CUSTOM_IDX {
-        if let Some(name) = AppConfig::load().custom_preset_name {
+        if let Some(name) = custom_name {
             run_command_blocking("easyeffects", &["-b", "2"]).await?;
             run_command_blocking("easyeffects", &["-l", &name]).await?;
         }
@@ -311,36 +320,14 @@ async fn easyeffects_profil_setzen(idx: u32) -> Result<(), String> {
 }
 
 async fn custom_preset_laden(path: PathBuf) -> Result<String, String> {
-    let name = path
-        .file_stem()
-        .map(|s| s.to_string_lossy().to_string())
-        .ok_or_else(|| "Invalid file name".to_string())?;
+    let name = extract_file_stem(&path)?;
 
-    let home = std::env::var("HOME").map_err(|e| e.to_string())?;
-    let dest = PathBuf::from(&home)
-        .join(".config/easyeffects/output")
-        .join(format!("{name}.json"));
+    let dest = easyeffects_output_dir()?.join(format!("{name}.json"));
     tokio::fs::copy(&path, &dest)
         .await
         .map_err(|e| e.to_string())?;
 
-    // Daemon starten falls nötig
-    let daemon_laeuft = tokio::task::spawn_blocking(|| {
-        std::process::Command::new("pgrep")
-            .args(["-x", "easyeffects"])
-            .status()
-            .map(|s| s.success())
-            .unwrap_or(false)
-    })
-    .await
-    .unwrap_or(false);
-
-    if !daemon_laeuft {
-        let _ = tokio::process::Command::new("easyeffects")
-            .arg("--gapplication-service")
-            .spawn();
-        tokio::time::sleep(tokio::time::Duration::from_millis(1500)).await;
-    }
+    ensure_easyeffects_running().await;
 
     run_command_blocking("easyeffects", &["-b", "2"]).await?;
     run_command_blocking("easyeffects", &["-l", &name]).await?;
@@ -349,8 +336,7 @@ async fn custom_preset_laden(path: PathBuf) -> Result<String, String> {
 }
 
 async fn presets_installieren() -> Result<(), String> {
-    let home = std::env::var("HOME").map_err(|e| e.to_string())?;
-    let dir = std::path::PathBuf::from(&home).join(".config/easyeffects/output");
+    let dir = easyeffects_output_dir()?;
     tokio::fs::create_dir_all(&dir)
         .await
         .map_err(|e| e.to_string())?;

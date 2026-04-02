@@ -5,6 +5,7 @@ use relm4::adw::prelude::*;
 use relm4::prelude::*;
 use rust_i18n::t;
 
+use crate::components::display::helpers::DISPLAY_NAME;
 use crate::services::commands::run_command_blocking;
 use crate::services::config::AppConfig;
 
@@ -92,17 +93,18 @@ impl Component for OledDimmingModel {
         let model = OledDimmingModel { helligkeit };
         let widgets = view_output!();
 
-        let wert = helligkeit;
-        sender.command(move |out, shutdown| {
-            shutdown
-                .register(async move {
-                    match kscreen_doctor_helligkeit(wert).await {
-                        Ok(()) => out.emit(OledDimmingCommandOutput::Gesetzt(wert)),
-                        Err(e) => out.emit(OledDimmingCommandOutput::Fehler(e)),
-                    }
-                })
-                .drop_on_shutdown()
-        });
+        if helligkeit < 100 {
+            sender.command(move |out, shutdown| {
+                shutdown
+                    .register(async move {
+                        match kscreen_doctor_helligkeit(helligkeit).await {
+                            Ok(()) => out.emit(OledDimmingCommandOutput::Gesetzt(helligkeit)),
+                            Err(e) => out.emit(OledDimmingCommandOutput::Fehler(e)),
+                        }
+                    })
+                    .drop_on_shutdown()
+            });
+        }
 
         let out = sender.command_sender().clone();
         tokio::spawn(start_brightness_listener(out));
@@ -167,7 +169,7 @@ impl Component for OledDimmingModel {
 }
 
 async fn kscreen_doctor_helligkeit(wert: u32) -> Result<(), String> {
-    let arg = format!("output.eDP-1.dimming.{}", wert);
+    let arg = format!("output.{}.dimming.{}", DISPLAY_NAME, wert);
     run_command_blocking("kscreen-doctor", &[&arg]).await
 }
 

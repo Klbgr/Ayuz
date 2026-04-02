@@ -3,7 +3,8 @@ use relm4::adw::prelude::*;
 use relm4::prelude::*;
 use rust_i18n::t;
 
-use super::helpers::{kwriteconfig_ausfuehren, qdbus_ausfuehren};
+use super::helpers::qdbus_ausfuehren;
+use crate::services::commands::run_command_blocking;
 use crate::services::config::AppConfig;
 
 pub struct OledCareModel {
@@ -105,17 +106,20 @@ impl Component for OledCareModel {
                 sender.command(move |out, shutdown| {
                     shutdown
                         .register(async move {
-                            match kwriteconfig_ausfuehren(&[
-                                "--file",
-                                "powermanagementprofilesrc",
-                                "--group",
-                                "AC",
-                                "--group",
-                                "DPMSControl",
-                                "--key",
-                                "idleTime",
-                                idle_time,
-                            ])
+                            match run_command_blocking(
+                                "kwriteconfig6",
+                                &[
+                                    "--file",
+                                    "powermanagementprofilesrc",
+                                    "--group",
+                                    "AC",
+                                    "--group",
+                                    "DPMSControl",
+                                    "--key",
+                                    "idleTime",
+                                    idle_time,
+                                ],
+                            )
                             .await
                             {
                                 Ok(()) => {

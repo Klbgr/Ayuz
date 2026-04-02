@@ -29,3 +29,9 @@ pub(crate) async fn run_command_blocking(program: &str, args: &[&str]) -> Result
 pub(crate) async fn pkexec_shell(command: &str) -> Result<(), String> {
     run_command_blocking("pkexec", &["sh", "-c", command]).await
 }
+
+pub(crate) fn is_kde_desktop() -> bool {
+    std::env::var("XDG_CURRENT_DESKTOP")
+        .map(|v| v.to_uppercase().contains("KDE"))
+        .unwrap_or(false)
+}

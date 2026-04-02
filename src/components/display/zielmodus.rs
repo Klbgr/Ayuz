@@ -3,7 +3,8 @@ use relm4::adw::prelude::*;
 use relm4::prelude::*;
 use rust_i18n::t;
 
-use super::helpers::{kwriteconfig_ausfuehren, qdbus_ausfuehren};
+use super::helpers::qdbus_ausfuehren;
+use crate::services::commands::{is_kde_desktop, run_command_blocking};
 use crate::services::config::AppConfig;
 
 pub struct ZielmodusModel {
@@ -18,6 +19,7 @@ pub enum ZielmodusMsg {
 
 #[derive(Debug)]
 pub enum ZielmodusCommandOutput {
+    AktivGelesen(bool),
     AktivGesetzt(bool),
     Fehler(String),
 }
@@ -67,24 +69,33 @@ impl Component for ZielmodusModel {
         _root: Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
-        let mut config = AppConfig::load();
-        let kde_verfuegbar = ist_kde();
-
-        let aktiv = if kde_verfuegbar {
-            let a =
-                lese_kwin_bool("Plugins", "diminactiveEnabled").unwrap_or(config.zielmodus_aktiv);
-            config.zielmodus_aktiv = a;
-            config.save();
-            a
-        } else {
-            config.zielmodus_aktiv
-        };
+        let config = AppConfig::load();
+        let kde_verfuegbar = is_kde_desktop();
 
         let model = ZielmodusModel {
-            aktiv,
+            aktiv: config.zielmodus_aktiv,
             kde_verfuegbar,
         };
         let widgets = view_output!();
+
+        if kde_verfuegbar {
+            let fallback = config.zielmodus_aktiv;
+            sender.command(move |out, shutdown| {
+                shutdown
+                    .register(async move {
+                        let aktiv = tokio::task::spawn_blocking(move || {
+                            lese_kwin_bool("Plugins", "diminactiveEnabled")
+                        })
+                        .await
+                        .ok()
+                        .flatten()
+                        .unwrap_or(fallback);
+                        out.emit(ZielmodusCommandOutput::AktivGelesen(aktiv));
+                    })
+                    .drop_on_shutdown()
+            });
+        }
+
         ComponentParts { model, widgets }
     }
 
@@ -118,6 +129,10 @@ impl Component for ZielmodusModel {
         _root: &Self::Root,
     ) {
         match msg {
+            ZielmodusCommandOutput::AktivGelesen(aktiv) => {
+                self.aktiv = aktiv;
+                AppConfig::update(|c| c.zielmodus_aktiv = aktiv);
+            }
             ZielmodusCommandOutput::AktivGesetzt(aktiv) => {
                 eprintln!("{}", t!("zielmodus_aktiv_set", value = aktiv.to_string()));
             }
@@ -130,17 +145,20 @@ impl Component for ZielmodusModel {
 
 async fn kwin_effekt_setzen(aktiv: bool) -> Result<(), String> {
     let wert = if aktiv { "true" } else { "false" };
-    kwriteconfig_ausfuehren(&[
-        "--file",
-        "kwinrc",
-        "--group",
-        "Plugins",
-        "--key",
-        "diminactiveEnabled",
-        "--type",
-        "bool",
-        wert,
-    ])
+    run_command_blocking(
+        "kwriteconfig6",
+        &[
+            "--file",
+            "kwinrc",
+            "--group",
+            "Plugins",
+            "--key",
+            "diminactiveEnabled",
+            "--type",
+            "bool",
+            wert,
+        ],
+    )
     .await?;
 
     let method = if aktiv { "loadEffect" } else { "unloadEffect" };
@@ -151,12 +169,6 @@ async fn kwin_effekt_setzen(aktiv: bool) -> Result<(), String> {
         "diminactive".to_string(),
     ])
     .await
-}
-
-fn ist_kde() -> bool {
-    std::env::var("XDG_CURRENT_DESKTOP")
-        .map(|v| v.to_uppercase().contains("KDE"))
-        .unwrap_or(false)
 }
 
 fn lese_kwin_bool(group: &str, key: &str) -> Option<bool> {

@@ -2,6 +2,8 @@ use crate::services::commands::run_command_blocking;
 use crate::services::config::AppConfig;
 use rust_i18n::t;
 
+pub(crate) const DISPLAY_NAME: &str = "eDP-1";
+
 const SRGB_ICM: &[u8] = include_bytes!("../../../assets/icm/ASUS_sRGB.icm");
 const DCIP3_ICM: &[u8] = include_bytes!("../../../assets/icm/ASUS_DCIP3.icm");
 const DISPLAYP3_ICM: &[u8] = include_bytes!("../../../assets/icm/ASUS_DisplayP3.icm");
@@ -37,7 +39,8 @@ pub(crate) async fn setup_icm_profiles() -> Result<std::path::PathBuf, String> {
 }
 
 pub(crate) async fn icm_profil_reset() -> Result<(), String> {
-    run_command_blocking("kscreen-doctor", &["output.eDP-1.colorProfileSource.EDID"]).await
+    let arg = format!("output.{}.colorProfileSource.EDID", DISPLAY_NAME);
+    run_command_blocking("kscreen-doctor", &[&arg]).await
 }
 
 pub(crate) async fn icm_profil_anwenden(
@@ -45,7 +48,8 @@ pub(crate) async fn icm_profil_anwenden(
     basis_pfad: &std::path::Path,
 ) -> Result<(), String> {
     let arg = format!(
-        "output.eDP-1.iccprofile.{}",
+        "output.{}.iccprofile.{}",
+        DISPLAY_NAME,
         basis_pfad.join(dateiname).display()
     );
     run_command_blocking("kscreen-doctor", &[&arg]).await
@@ -81,6 +85,3 @@ pub(crate) async fn qdbus_ausfuehren(args: Vec<String>) -> Result<(), String> {
     }
 }
 
-pub(crate) async fn kwriteconfig_ausfuehren(args: &[&str]) -> Result<(), String> {
-    run_command_blocking("kwriteconfig6", args).await
-}
