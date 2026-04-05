@@ -35,6 +35,7 @@ impl Component for FnKeyModel {
     view! {
         adw::PreferencesGroup {
             set_title: &t!("fn_key_group_title"),
+            set_description: Some(&t!("fn_key_group_desc")),
 
             add = &model.zeile_hinweis.clone(),
             add = &model.zeile_gesperrt.clone(),

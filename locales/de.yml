@@ -12,7 +12,9 @@ error_prefix: "Fehler:"
 lang_restart_toast: "Sprache geändert. Bitte starte die App neu, um die Änderungen zu übernehmen."
 
 # farbskala
-farbskala_title: "Farbskala"
+farbskala_group_title: "Farbskala"
+farbskala_group_desc: "Wählen Sie die Bildschirmfarbskala, die Ihren Anforderungen am besten entspricht.\nStandardmäßig ist der Bildschirm werkseitig kalibriert, um lebendige Vollfarbbilder darzustellen."
+farbskala_title: "Farbprofil"
 farbskala_option_native: "Nativ"
 farbskala_desc_native: "Standardmäßig lebendige, optimierte Farben."
 farbskala_desc_srgb: "Standardfarben für Webinhalte und sRGB-Geräte."
@@ -58,6 +60,8 @@ zielmodus_aktiv_set: "Zielmodus auf %{value} gesetzt"
 
 # oled_care
 oled_care_group_title: "ASUS OLED Care"
+oled_care_group_desc: "ASUS OLED Care bietet eine Reihe von Optimierungseinstellungen, die nachweislich das OLED-Display schützen und die Displaylebensdauer maximieren."
+oled_care_group_notice: "Hinweis: Vermeiden Sie es, statische Bilder bei maximaler Helligkeit über längere Zeit anzuzeigen, da dies zu dauerhaften Einbrennschäden am OLED-Display führen kann."
 oled_care_pixel_refresh_title: "Pixelaktualisierung"
 oled_care_pixel_refresh_subtitle: "Starten eines speziellen Bildschirmschoners nach Inaktivität, um OLED-Pixel gleichmäßig zu belasten."
 oled_care_panel_autohide_title: "KDE-Panel automatisch ausblenden"
@@ -104,6 +108,7 @@ error_swayidle_wait: "swayidle warten fehlgeschlagen: %{error}"
 
 # fn_key
 fn_key_group_title: "Funktionstaste"
+fn_key_group_desc: "Eine optionale Einstellung der Funktionstaste, mit der Sie die Hotkeys Ihrer Tastatur anpassen können."
 fn_key_hint_title: "Hinweis"
 fn_key_hint_subtitle: "Hinweis: Änderungen am Bootloader werden erst nach einem Systemneustart wirksam."
 fn_key_locked_title: "Gesperrte Fn-Taste"

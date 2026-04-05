@@ -57,6 +57,9 @@ impl Component for FarbskalaModel {
 
     view! {
         adw::PreferencesGroup {
+            set_title: &t!("farbskala_group_title"),
+            set_description: Some(&t!("farbskala_group_desc")),
+
             add = &adw::ComboRow {
                 set_title: &t!("farbskala_title"),
                 #[watch]

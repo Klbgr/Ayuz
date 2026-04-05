@@ -12,6 +12,8 @@ error_prefix: "Error:"
 lang_restart_toast: "Language changed. Please restart the app to apply changes."
 
 # farbskala
+farbskala_group_title: "Color Gamut"
+farbskala_group_desc: "Select the screen color gamut that best meets your requirements.\nBy default, the screen is factory-calibrated to display vivid full-color images."
 farbskala_title: "Color Profile"
 farbskala_option_native: "Native"
 farbskala_desc_native: "Default vivid, optimized colors."
@@ -58,6 +60,8 @@ zielmodus_aktiv_set: "Target Mode set to %{value}"
 
 # oled_care
 oled_care_group_title: "ASUS OLED Care"
+oled_care_group_desc: "ASUS OLED Care includes a set of optimization settings that's proven to protect your OLED display and maximize display lifespan."
+oled_care_group_notice: "Notice: Avoid displaying static images at maximum brightness for extended periods; otherwise, it might cause permanent burn-in damage to your OLED display."
 oled_care_pixel_refresh_title: "Pixel Refresh"
 oled_care_pixel_refresh_subtitle: "Launches a special screensaver after inactivity to evenly stress OLED pixels."
 oled_care_panel_autohide_title: "Auto-hide KDE Panel"
@@ -104,6 +108,7 @@ error_swayidle_wait: "Failed to wait for swayidle: %{error}"
 
 # fn_key
 fn_key_group_title: "Function Key"
+fn_key_group_desc: "An optional function key setting that allows you to change your keyboard hotkeys."
 fn_key_hint_title: "Note"
 fn_key_hint_subtitle: "Note: Bootloader changes take effect only after a system restart."
 fn_key_locked_title: "Locked Fn Key"

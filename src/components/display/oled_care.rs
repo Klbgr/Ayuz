@@ -1,3 +1,4 @@
+use gtk4 as gtk;
 use relm4::adw;
 use relm4::adw::prelude::*;
 use relm4::prelude::*;
@@ -38,6 +39,18 @@ impl Component for OledCareModel {
     view! {
         adw::PreferencesGroup {
             set_title: &t!("oled_care_group_title"),
+            set_description: Some(&t!("oled_care_group_desc")),
+
+            add = &gtk::Label {
+                set_label: &t!("oled_care_group_notice"),
+                add_css_class: "error",
+                set_wrap: true,
+                set_xalign: 0.0,
+                set_margin_top: 8,
+                set_margin_start: 12,
+                set_margin_end: 12,
+                set_margin_bottom: 4,
+            },
 
             add = &adw::SwitchRow {
                 set_title: &t!("oled_care_pixel_refresh_title"),
