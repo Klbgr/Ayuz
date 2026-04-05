@@ -347,6 +347,22 @@ impl SimpleComponent for AppModel {
         let sidebar_header = adw::HeaderBar::new();
         sidebar_header.pack_end(&search_widgets.toggle);
 
+        {
+            let png_bytes = include_bytes!("../assets/trayicon.png");
+            let bytes = gtk4::glib::Bytes::from_static(png_bytes);
+            if let Ok(texture) = gtk4::gdk::Texture::from_bytes(&bytes) {
+                let icon_image = gtk4::Image::from_paintable(Some(&texture));
+                icon_image.set_pixel_size(24);
+                let title_box = gtk4::Box::new(gtk4::Orientation::Horizontal, 8);
+                title_box.set_halign(gtk4::Align::Center);
+                let title_label = gtk4::Label::new(Some(&t!("app_title")));
+                title_label.add_css_class("title");
+                title_box.append(&icon_image);
+                title_box.append(&title_label);
+                sidebar_header.set_title_widget(Some(&title_box));
+            }
+        }
+
         let sidebar_toolbar = adw::ToolbarView::new();
         sidebar_toolbar.add_top_bar(&sidebar_header);
         sidebar_toolbar.add_top_bar(&search_widgets.bar);
