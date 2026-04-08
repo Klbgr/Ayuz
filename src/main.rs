@@ -43,9 +43,17 @@ fn main() {
     tracing_subscriber::fmt::init();
     let config = services::config::AppConfig::load();
     rust_i18n::set_locale(&config.language);
-    let a = relm4::RelmApp::new("de.guido.asus-hub");
+
+    // GTK4 parses all CLI arguments internally and aborts with "Unknown option"
+    // for any flag it doesn't recognize — before our Rust code gets to handle it.
+    // We read --hidden ourselves first, then strip it from the args before passing
+    // them to GTK via .with_args().
+    let args: Vec<String> = std::env::args().collect();
+    let start_hidden = args.iter().any(|arg| arg == "--hidden");
+    let gtk_args: Vec<String> = args.into_iter().filter(|arg| arg != "--hidden").collect();
+
+    let a = relm4::RelmApp::new("de.guido.asus-hub").with_args(gtk_args);
     load_css();
     relm4::adw::StyleManager::default().set_color_scheme(relm4::adw::ColorScheme::PreferDark);
-    let start_hidden = std::env::args().any(|arg| arg == "--hidden");
     a.run::<app::AppModel>(start_hidden);
 }

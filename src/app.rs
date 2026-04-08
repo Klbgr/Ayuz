@@ -459,6 +459,17 @@ impl SimpleComponent for AppModel {
 
         root.set_hide_on_close(true);
 
+        // Relm4 calls window.present() internally after init() completes, which
+        // overrides set_visible: false and forces the window to show. We schedule
+        // a hide in the same GTK frame via idle_add_local_once so the window is
+        // invisible again before a single pixel is drawn to the screen.
+        if init {
+            let win = root.clone();
+            gtk4::glib::idle_add_local_once(move || {
+                win.set_visible(false);
+            });
+        }
+
         ComponentParts { model, widgets }
     }
 }

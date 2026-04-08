@@ -39,6 +39,8 @@ pub fn set_enabled(enable: bool) {
             Type=Application\n\
             Name=Asus Hub\n\
             Exec=asus-hub --hidden\n\
+            Hidden=false\n\
+            StartupNotify=false\n\
             X-GNOME-Autostart-enabled=true\n";
         let _ = std::fs::write(&path, content);
     } else {
