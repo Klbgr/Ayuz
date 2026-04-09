@@ -45,3 +45,16 @@ assets = [
     { source = "packaging/de.guido.asus-hub.metainfo.xml", dest = "/usr/share/metainfo/de.guido.asus-hub.metainfo.xml", mode = "644" },
     { source = "assets/trayicon.png", dest = "/usr/share/icons/hicolor/128x128/apps/de.guido.asus-hub.png", mode = "644" }
 ]
+
+[package.metadata.appimage]
+auto_link = true
+auto_link_exclude_list = [
+    "libc.so*",
+    "libdl.so*",
+    "libpthread.so*",
+    "libm.so*",
+    "libgcc_s.so*",
+]
+icon = "assets/trayicon.png"
+desktop_entry = "packaging/asus-hub-appimage.desktop"
+assets = ["packaging/appimage/usr"]

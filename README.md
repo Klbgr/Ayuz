@@ -195,6 +195,12 @@ Download the package matching your distribution from the [GitHub Releases](https
   sudo apt install ./asus-hub_1.0.1-1_amd64.deb
   ```
 
+- **AppImage (any distribution):**
+  ```bash
+  chmod +x asus-hub.AppImage
+  ./asus-hub.AppImage
+  ```
+
 ### Uninstall
 
 - **Fedora, CentOS oder RHEL (via RPM/DNF):**
@@ -219,6 +225,16 @@ git clone https://github.com/Traciges/asus-hub
 cd asus-hub
 cargo build --release
 ./target/release/asus-hub
+```
+
+### Build an AppImage
+
+Requires [`appimagetool`](https://github.com/AppImage/AppImageKit/releases) on your `$PATH`.
+
+```bash
+cargo install cargo-appimage
+cargo appimage
+./target/appimage/asus-hub.AppImage
 ```
 
 ---

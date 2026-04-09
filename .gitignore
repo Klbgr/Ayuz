@@ -3,6 +3,7 @@ context/
 
 # Rust / Cargo
 /target
+/libs
 **/*.rs.bk
 
 # Editor: VS Code
