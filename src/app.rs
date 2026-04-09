@@ -30,6 +30,7 @@ use crate::components::keyboard::GesturenModel;
 use crate::components::keyboard::TouchpadModel;
 use crate::components::system::battery::BatteryModel;
 use crate::components::system::fan::FanModel;
+use crate::components::system::gpu::GpuModel;
 use crate::search::sorted_nav_items;
 use crate::tray;
 use relm4::adw;
@@ -54,6 +55,7 @@ pub struct AppModel {
     _tray: ksni::Handle<tray::AsusTray>,
     battery: Controller<BatteryModel>,
     fan: Controller<FanModel>,
+    gpu: Controller<GpuModel>,
     oled_dimming: Controller<OledDimmingModel>,
     target_mode: Controller<TargetModeModel>,
     oled_care: Controller<OledCareModel>,
@@ -135,6 +137,9 @@ impl SimpleComponent for AppModel {
         let fan = FanModel::builder()
             .launch(())
             .forward(sender.input_sender(), error_handler);
+        let gpu = GpuModel::builder()
+            .launch(())
+            .forward(sender.input_sender(), error_handler);
         let oled_dimming = OledDimmingModel::builder()
             .launch(())
             .forward(sender.input_sender(), error_handler);
@@ -184,6 +189,7 @@ impl SimpleComponent for AppModel {
             _tray: tray_handle,
             battery,
             fan,
+            gpu,
             oled_dimming,
             target_mode,
             oled_care,
@@ -199,6 +205,7 @@ impl SimpleComponent for AppModel {
 
         let battery_widget = model.battery.widget();
         let fan_widget = model.fan.widget();
+        let gpu_widget = model.gpu.widget();
         let oled_dimming_widget = model.oled_dimming.widget();
         let target_mode_widget = model.target_mode.widget();
         let oled_care_widget = model.oled_care.widget();
@@ -243,6 +250,7 @@ impl SimpleComponent for AppModel {
         let system_page = adw::PreferencesPage::new();
         system_page.add(battery_widget);
         system_page.add(fan_widget);
+        system_page.add(gpu_widget);
 
         let lang_group = adw::PreferencesGroup::new();
         lang_group.set_title(&t!("app_settings_title"));
@@ -324,6 +332,7 @@ impl SimpleComponent for AppModel {
             ),
             ("battery", battery_widget.clone().upcast::<gtk4::Widget>()),
             ("fan", fan_widget.clone().upcast::<gtk4::Widget>()),
+            ("gpu", gpu_widget.clone().upcast::<gtk4::Widget>()),
             ("lang", lang_group.clone().upcast::<gtk4::Widget>()),
         ]);
 
