@@ -7,4 +7,5 @@ Exec=asus-hub
 Icon=asus-hub
 Terminal=false
 StartupNotify=true
+StartupWMClass=de.guido.asus-hub
 Categories=Settings;HardwareSettings;System;
