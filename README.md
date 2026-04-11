@@ -62,8 +62,7 @@ The application is smart about availability: if a required tool or desktop envir
 | Panel Auto-Hide *(KDE only)* | Automatically hides the KDE panel to reduce static OLED elements | KDE, `qdbus` |
 | Panel Transparency *(KDE only)* | Sets the KDE panel to transparent or opaque | KDE, `qdbus` |
 
-> **Bundled color gamut presets:** Native, sRGB, DCI-P3 and Display P3
->
+> **Bundled color gamut presets:** Native, sRGB, DCI-P3 and Display P3 <br>
 > These presets are the original ASUS color gamut profiles.
 
 ### Keyboard
