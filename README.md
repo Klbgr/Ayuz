@@ -55,12 +55,12 @@ The application is smart about availability: if a required tool or desktop envir
 
 | Feature | Description | Requires |
 |---------|-------------|----------|
-| OLED Flicker-Free Dimming | Reduces OLED panel flickering at low brightness levels using a 10–100% slider | `kscreen-doctor` |
-| Color Gamut | Switch between Native, sRGB, DCI-P3, and Display P3 color profiles - bundled ICC files sourced directly from ASUS | - |
-| Target Mode *(KDE only)* | Dims unfocused windows using the KWin `diminactive` compositor effect | KDE, `qdbus` |
-| OLED Pixel Refresh *(KDE only)* | Activates a pixel refresh screensaver after inactivity to reduce burn-in risk | KDE, `kwriteconfig6` |
-| Panel Auto-Hide *(KDE only)* | Automatically hides the KDE panel to reduce static OLED elements | KDE, `qdbus` |
-| Panel Transparency *(KDE only)* | Sets the KDE panel to transparent or opaque | KDE, `qdbus` |
+| OLED Flicker-Free Dimming | Reduces OLED panel flickering at low brightness levels using a 10–100% slider | KDE, `kscreen-doctor` |
+| Color Gamut | Switch between Native, sRGB, DCI-P3, and Display P3 color profiles - bundled ICC files sourced directly from ASUS | KDE, `kscreen-doctor` |
+| Target Mode | Dims unfocused windows using the KWin `diminactive` compositor effect | KDE, `qdbus`, `kwriteconfig6` |
+| OLED Pixel Refresh | Activates a pixel refresh screensaver after inactivity to reduce burn-in risk | KDE, `kwriteconfig6` |
+| Panel Auto-Hide | Automatically hides the KDE panel to reduce static OLED elements | KDE, `qdbus` |
+| Panel Transparency | Sets the KDE panel to transparent or opaque | KDE, `qdbus` |
 
 > **Bundled color gamut presets:** Native, sRGB, DCI-P3 and Display P3 <br>
 > These presets are the original ASUS color gamut profiles.
