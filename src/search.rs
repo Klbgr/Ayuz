@@ -22,7 +22,7 @@ use std::rc::Rc;
 
 // (icon, i18n-key, stack-name)
 pub const NAV_ITEMS: [(&str, &str, &str); 5] = [
-    ("monitor-symbolic", "tab_display", "display"),
+    ("video-display-symbolic", "tab_display", "display"),
     ("input-keyboard-symbolic", "tab_keyboard", "keyboard"),
     ("input-touchpad-symbolic", "tab_touchpad", "touchpad"),
     ("audio-headset-symbolic", "tab_audio", "audio"),
@@ -47,56 +47,56 @@ static SEARCH_INDEX: &[SearchItem] = &[
     // Display
     SearchItem {
         title_key: "oled_dimming_group_title",
-        page_icon: "monitor-symbolic",
+        page_icon: "video-display-symbolic",
         page_title_key: "tab_display",
         page_name: "display",
         component_key: "oled_dimming",
     },
     SearchItem {
         title_key: "oled_dimming_slider_title",
-        page_icon: "monitor-symbolic",
+        page_icon: "video-display-symbolic",
         page_title_key: "tab_display",
         page_name: "display",
         component_key: "oled_dimming",
     },
     SearchItem {
         title_key: "target_mode_group_title",
-        page_icon: "monitor-symbolic",
+        page_icon: "video-display-symbolic",
         page_title_key: "tab_display",
         page_name: "display",
         component_key: "target_mode",
     },
     SearchItem {
         title_key: "target_mode_switch_title",
-        page_icon: "monitor-symbolic",
+        page_icon: "video-display-symbolic",
         page_title_key: "tab_display",
         page_name: "display",
         component_key: "target_mode",
     },
     SearchItem {
         title_key: "oled_care_pixel_refresh_title",
-        page_icon: "monitor-symbolic",
+        page_icon: "video-display-symbolic",
         page_title_key: "tab_display",
         page_name: "display",
         component_key: "oled_care",
     },
     SearchItem {
         title_key: "oled_care_panel_autohide_title",
-        page_icon: "monitor-symbolic",
+        page_icon: "video-display-symbolic",
         page_title_key: "tab_display",
         page_name: "display",
         component_key: "oled_care",
     },
     SearchItem {
         title_key: "oled_care_transparency_title",
-        page_icon: "monitor-symbolic",
+        page_icon: "video-display-symbolic",
         page_title_key: "tab_display",
         page_name: "display",
         component_key: "oled_care",
     },
     SearchItem {
         title_key: "color_gamut_title",
-        page_icon: "monitor-symbolic",
+        page_icon: "video-display-symbolic",
         page_title_key: "tab_display",
         page_name: "display",
         component_key: "color_gamut",

@@ -32,13 +32,6 @@ finish-args:
   - --own-name=org.kde.StatusNotifierItem-2-1
 
 modules:
-  - name: adwaita-icon-theme
-    buildsystem: meson
-    sources:
-      - type: git
-        url: https://github.com/GNOME/adwaita-icon-theme.git/
-        tag: "50.0"
-
   - name: asus-hub
     buildsystem: simple
     build-options:
