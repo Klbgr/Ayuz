@@ -55,7 +55,7 @@ The application is smart about availability: if a required tool or desktop envir
 
 | Feature | Description | Requires |
 |---------|-------------|----------|
-| OLED Flicker-Free Dimming | Reduces OLED panel flickering at low brightness levels using a 10–100% slider | KDE, `kscreen-doctor` |
+| OLED Flicker-Free Dimming | Reduces OLED panel flickering at low brightness levels using a 10-100% slider | KDE, `kscreen-doctor` |
 | Color Gamut | Switch between Native, sRGB, DCI-P3, and Display P3 color profiles - bundled ICC files sourced directly from ASUS | KDE, `kscreen-doctor` |
 | Target Mode | Dims unfocused windows using the KWin `diminactive` compositor effect | KDE, `qdbus`, `kwriteconfig6` |
 | OLED Pixel Refresh | Activates a pixel refresh screensaver after inactivity to reduce burn-in risk | KDE, `kwriteconfig6` |
@@ -71,7 +71,7 @@ The application is smart about availability: if a required tool or desktop envir
 |---------|-------------|----------|
 | Automatic Backlight | Uses the ambient light sensor to automatically adjust keyboard brightness | `iio-sensor-proxy` |
 | Backlight Idle Mode | Turns off backlight after inactivity (1/2/5 min), configurable per power state | `swayidle` |
-| FN Key Mode | Toggle between function key priority (F1–F12) and shortcut priority | `asusd` |
+| FN Key Mode | Toggle between function key priority (F1-F12) and shortcut priority | `asusd` |
 
 ### Touchpad
 
@@ -84,7 +84,7 @@ The application is smart about availability: if a required tool or desktop envir
 
 | Feature | Description | Requires |
 |---------|-------------|----------|
-| Volume & Boost | Control system volume from 0–150% via PipeWire | `wpctl` |
+| Volume & Boost | Control system volume from 0-150% via PipeWire | `wpctl` |
 | Sound Profiles | Apply EasyEffects presets bundled with the app (see below) | `easyeffects` |
 
 > **Bundled EasyEffects presets:** Movie, Music, Perfect EQ, Video, Voice, Custom <br>
@@ -99,7 +99,7 @@ The application is smart about availability: if a required tool or desktop envir
 | Deep Sleep | Switch between `s2idle` and `deep` suspend modes | - |
 | Fan Profiles | Switch between Performance, Balanced, and Quiet fan curves | `asusd` |
 | GPU Mode | Switch between GPU modes: Hybrid, Integrated, Nvidia (No Modeset), VFIO, ASUS eGPU, and ASUS MUX Discrete. Switching GPU modes requires a full system reboot. | `supergfxctl` |
-| GPU Memory Allocation | Reserve system RAM for the integrated GPU (UMA Frame Buffer). Options: Auto, 1–8 GB. Requires a supported BIOS. Changes require a full system reboot. | `asusd` |
+| GPU Memory Allocation | Reserve system RAM for the integrated GPU (UMA Frame Buffer). Options: Auto, 1-8 GB. Requires a supported BIOS. Changes require a full system reboot. | `asusd` |
 
 ### General
 
