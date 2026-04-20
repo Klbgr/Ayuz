@@ -34,7 +34,7 @@ This software is provided as-is, without warranty, and uses community reverse-en
 </tr>
 <tr>
   <td align="center"><img src="screenshots/Touchpad.png" alt="Touchpad settings" width="100%"/><br/><em>Touchpad Settings</em></td>
-    <td align="center" colspan="2"><img src="screenshots/System.png" alt="System settings" width="50%"/><br/><em>System Settings</em></td>
+    <td align="center" colspan="2"><img src="screenshots/System.png" alt="System settings" width="100%"/><br/><em>System Settings</em></td>
 </tr>
 </table>
 
