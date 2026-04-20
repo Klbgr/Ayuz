@@ -15,7 +15,9 @@
 ---
 
 > [!WARNING]
-> **Disclaimer:** This is an unofficial, community-driven, open-source project. **"Asus Hub" is NOT affiliated with, endorsed by, sponsored by, or connected to ASUSTeK Computer Inc. in any way.** "ASUS", "Zenbook", "ROG", "Vivobook", and "MyAsus" are registered trademarks of ASUSTeK Computer Inc. This software is provided as-is, without warranty, and uses community reverse-engineered backend tools. Use at your own risk.
+> **Disclaimer:** This is an unofficial, community-driven, open-source project. **"Asus Hub" is NOT affiliated with, endorsed by, sponsored by, or connected to ASUSTeK Computer Inc. in any way.** "ASUS", "Zenbook", "ROG", "Vivobook", and "MyAsus" are registered trademarks of ASUSTeK Computer Inc. <br>
+The use of ASUS trademarks within this website and associated tools and libraries is only to provide a recognisable identifier to users to enable them to associate that these tools will work with ASUS laptops. <br>
+This software is provided as-is, without warranty, and uses community reverse-engineered backend tools. Use at your own risk.
 
 ---
 
