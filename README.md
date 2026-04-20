@@ -21,15 +21,20 @@
 
 ## Screenshots
 
-<table align="center"><tr>
-  <td align="center"><img src="screenshots/Display.png" alt="Display settings" width="100%"/><br/><em>Display Settings</em></td>
+<table align="center">
+  <tr>
+    <td align="center"><img src="screenshots/Homepage.png" alt="Homepage" width="100%"/><br/><em>Homepage</em></td>
+    <td align="center"><img src="screenshots/Display.png" alt="Display settings" width="100%"/><br/><em>Display Settings</em></td>
+  </tr>
+  <tr>
   <td align="center"><img src="screenshots/Keyboard.png" alt="Keyboard settings" width="100%"/><br/><em>Keyboard Settings</em></td>
-</tr><tr>
   <td align="center"><img src="screenshots/Audio.png" alt="Audio settings" width="100%"/><br/><em>Audio Settings</em></td>
+</tr>
+<tr>
   <td align="center"><img src="screenshots/Touchpad.png" alt="Touchpad settings" width="100%"/><br/><em>Touchpad Settings</em></td>
-</tr><tr>
-  <td align="center" colspan="2"><img src="screenshots/System.png" alt="System settings" width="50%"/><br/><em>System Settings</em></td>
-</tr></table>
+    <td align="center" colspan="2"><img src="screenshots/System.png" alt="System settings" width="50%"/><br/><em>System Settings</em></td>
+</tr>
+</table>
 
 ---
 
@@ -37,6 +42,7 @@
 
 ASUS provides the MyAsus application for Windows, offering a unified interface to control display settings, battery care, fan profiles, keyboard backlight, and more. On Linux, no equivalent exists. <br>
 Instead, the relevant controls are scattered across a variety of independent tools and configuration files:
+
 - Battery charge limits via `asusctl`
 - Audio effects via EasyEffects with manual preset management
 - Display brightness quirks via `kscreen-doctor`
@@ -53,38 +59,38 @@ The application is smart about availability: if a required tool or desktop envir
 
 ### Display
 
-| Feature | Description | Requires |
-|---------|-------------|----------|
-| OLED Flicker-Free Dimming | Reduces OLED panel flickering at low brightness levels using a 10-100% slider | KDE, `kscreen-doctor` |
-| Color Gamut | Switch between Native, sRGB, DCI-P3, and Display P3 color profiles - bundled ICC files sourced directly from ASUS | KDE, `kscreen-doctor` |
-| Target Mode | Dims unfocused windows using the KWin `diminactive` compositor effect | KDE, `qdbus`, `kwriteconfig6` |
-| OLED Pixel Refresh | Activates a pixel refresh screensaver after inactivity to reduce burn-in risk | KDE, `kwriteconfig6` |
-| Panel Auto-Hide | Automatically hides the KDE panel to reduce static OLED elements | KDE, `qdbus` |
-| Panel Transparency | Sets the KDE panel to transparent or opaque | KDE, `qdbus` |
+| Feature                   | Description                                                                                                       | Requires                      |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| OLED Flicker-Free Dimming | Reduces OLED panel flickering at low brightness levels using a 10-100% slider                                     | KDE, `kscreen-doctor`         |
+| Color Gamut               | Switch between Native, sRGB, DCI-P3, and Display P3 color profiles - bundled ICC files sourced directly from ASUS | KDE, `kscreen-doctor`         |
+| Target Mode               | Dims unfocused windows using the KWin `diminactive` compositor effect                                             | KDE, `qdbus`, `kwriteconfig6` |
+| OLED Pixel Refresh        | Activates a pixel refresh screensaver after inactivity to reduce burn-in risk                                     | KDE, `kwriteconfig6`          |
+| Panel Auto-Hide           | Automatically hides the KDE panel to reduce static OLED elements                                                  | KDE, `qdbus`                  |
+| Panel Transparency        | Sets the KDE panel to transparent or opaque                                                                       | KDE, `qdbus`                  |
 
 > **Bundled color gamut presets:** Native, sRGB, DCI-P3 and Display P3 <br>
 > These presets are the original ASUS color gamut profiles.
 
 ### Keyboard
 
-| Feature | Description | Requires |
-|---------|-------------|----------|
-| Automatic Backlight | Uses the ambient light sensor to automatically adjust keyboard brightness | `iio-sensor-proxy` |
-| Backlight Idle Mode | Turns off backlight after inactivity (1/2/5 min), configurable per power state | `swayidle` |
-| FN Key Mode | Toggle between function key priority (F1-F12) and shortcut priority | `asusd` |
+| Feature             | Description                                                                    | Requires           |
+| ------------------- | ------------------------------------------------------------------------------ | ------------------ |
+| Automatic Backlight | Uses the ambient light sensor to automatically adjust keyboard brightness      | `iio-sensor-proxy` |
+| Backlight Idle Mode | Turns off backlight after inactivity (1/2/5 min), configurable per power state | `swayidle`         |
+| FN Key Mode         | Toggle between function key priority (F1-F12) and shortcut priority            | `asusd`            |
 
 ### Touchpad
 
-| Feature | Description | Requires |
-|---------|-------------|----------|
-| Smart Gestures | Control volume, brightness, and media playback via touchpad edge swipes | - |
+| Feature         | Description                                                               | Requires     |
+| --------------- | ------------------------------------------------------------------------- | ------------ |
+| Smart Gestures  | Control volume, brightness, and media playback via touchpad edge swipes   | -            |
 | Touchpad Toggle | Enable or disable the touchpad, with a 10-second auto-revert safety timer | KDE or GNOME |
 
 ### Audio
 
-| Feature | Description | Requires |
-|---------|-------------|----------|
-| Volume & Boost | Control system volume from 0-150% via PipeWire | `wpctl` |
+| Feature        | Description                                                | Requires      |
+| -------------- | ---------------------------------------------------------- | ------------- |
+| Volume & Boost | Control system volume from 0-150% via PipeWire             | `wpctl`       |
 | Sound Profiles | Apply EasyEffects presets bundled with the app (see below) | `easyeffects` |
 
 > **Bundled EasyEffects presets:** Movie, Music, Perfect EQ, Video, Voice, Custom <br>
@@ -92,14 +98,14 @@ The application is smart about availability: if a required tool or desktop envir
 
 ### System
 
-| Feature | Description | Requires |
-|---------|-------------|----------|
-| Battery Maintenance Mode | Limit charging to 80% for long-term battery health | `asusd` |
-| Full Charge | Charge to 100% with automatic revert to maintenance mode after 24 hours | `asusd` |
-| Deep Sleep | Switch between `s2idle` and `deep` suspend modes | - |
-| Fan Profiles | Switch between Performance, Balanced, and Quiet fan curves | `asusd` |
-| GPU Mode | Switch between GPU modes: Hybrid, Integrated, Nvidia (No Modeset), VFIO, ASUS eGPU, and ASUS MUX Discrete. Switching GPU modes requires a full system reboot. | `supergfxctl` |
-| GPU Memory Allocation | Reserve system RAM for the integrated GPU (UMA Frame Buffer). Options: Auto, 1-8 GB. Requires a supported BIOS. Changes require a full system reboot. | `asusd` |
+| Feature                  | Description                                                                                                                                                   | Requires      |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| Battery Maintenance Mode | Limit charging to 80% for long-term battery health                                                                                                            | `asusd`       |
+| Full Charge              | Charge to 100% with automatic revert to maintenance mode after 24 hours                                                                                       | `asusd`       |
+| Deep Sleep               | Switch between `s2idle` and `deep` suspend modes                                                                                                              | -             |
+| Fan Profiles             | Switch between Performance, Balanced, and Quiet fan curves                                                                                                    | `asusd`       |
+| GPU Mode                 | Switch between GPU modes: Hybrid, Integrated, Nvidia (No Modeset), VFIO, ASUS eGPU, and ASUS MUX Discrete. Switching GPU modes requires a full system reboot. | `supergfxctl` |
+| GPU Memory Allocation    | Reserve system RAM for the integrated GPU (UMA Frame Buffer). Options: Auto, 1-8 GB. Requires a supported BIOS. Changes require a full system reboot.         | `asusd`       |
 
 ### General
 
@@ -117,19 +123,19 @@ The application is smart about availability: if a required tool or desktop envir
 
 Asus Hub integrates with several external tools and system services. Install only the ones relevant to the features you want to use.
 
-| Dependency | Purpose | Package (Fedora) |
-|------------|---------|-----------------|
-| [`asusctl`](https://gitlab.com/asus-linux/asusctl) | Battery care, fan profiles, FN key mode | `asusctl` (copr) |
-| `asusd` | System daemon required by asusctl | bundled with `asusctl` |
-| [`supergfxctl`](https://gitlab.com/asus-linux/supergfxctl) | GPU mode switching (Hybrid, Integrated, Nvidia, VFIO, eGPU, MUX) | `supergfxctl` (copr) |
-| [`easyeffects`](https://github.com/wwmm/easyeffects) | Audio sound profiles | `easyeffects` |
-| `kscreen-doctor` | OLED flicker-free dimming | `kscreen` |
-| `iio-sensor-proxy` | Ambient light sensor for auto backlight | `iio-sensor-proxy` |
-| `swayidle` | Keyboard backlight idle timer | `swayidle` |
-| `wpctl` | PipeWire volume control | bundled with `pipewire-utils` |
-| `qdbus` | KDE-specific D-Bus calls (KDE features) | `qt6-tools` |
-| `kwriteconfig6` | KDE config file access (KDE features) | `kf6-kconfig` |
-| `gsettings` | Touchpad toggle on GNOME | `glib2` |
+| Dependency                                                 | Purpose                                                          | Package (Fedora)              |
+| ---------------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------- |
+| [`asusctl`](https://gitlab.com/asus-linux/asusctl)         | Battery care, fan profiles, FN key mode                          | `asusctl` (copr)              |
+| `asusd`                                                    | System daemon required by asusctl                                | bundled with `asusctl`        |
+| [`supergfxctl`](https://gitlab.com/asus-linux/supergfxctl) | GPU mode switching (Hybrid, Integrated, Nvidia, VFIO, eGPU, MUX) | `supergfxctl` (copr)          |
+| [`easyeffects`](https://github.com/wwmm/easyeffects)       | Audio sound profiles                                             | `easyeffects`                 |
+| `kscreen-doctor`                                           | OLED flicker-free dimming                                        | `kscreen`                     |
+| `iio-sensor-proxy`                                         | Ambient light sensor for auto backlight                          | `iio-sensor-proxy`            |
+| `swayidle`                                                 | Keyboard backlight idle timer                                    | `swayidle`                    |
+| `wpctl`                                                    | PipeWire volume control                                          | bundled with `pipewire-utils` |
+| `qdbus`                                                    | KDE-specific D-Bus calls (KDE features)                          | `qt6-tools`                   |
+| `kwriteconfig6`                                            | KDE config file access (KDE features)                            | `kf6-kconfig`                 |
+| `gsettings`                                                | Touchpad toggle on GNOME                                         | `glib2`                       |
 
 > Features that depend on a missing tool or an incompatible desktop environment are automatically disabled in the UI.
 
@@ -153,15 +159,18 @@ Other Linux distributions should work as long as the relevant dependencies can b
 ### 1. Prerequisites
 
 **Note:** If you plan to use the AppImage (see Step 5), you can skip this step entirely. The AppImage already bundles all the necessary UI dependencies.
+
 - Rust toolchain (install via [rustup](https://rustup.rs))
 - GTK4 and Libadwaita development libraries
 
 **Fedora:**
+
 ```bash
 sudo dnf install gtk4-devel libadwaita-devel
 ```
 
 **Arch:**
+
 ```bash
 sudo pacman -S gtk4 libadwaita
 ```
@@ -170,6 +179,7 @@ sudo pacman -S gtk4 libadwaita
 
 Most tools are already included with a standard Fedora KDE installation (`kscreen-doctor`, `kwriteconfig6`, `wpctl`). The following need to be installed manually: <br>
 **asusctl** (via COPR - see [asus-linux.org](https://asus-linux.org) for full documentation):
+
 ```bash
 sudo dnf copr enable lukenukem/asus-linux
 sudo dnf update
@@ -181,6 +191,7 @@ sudo systemctl enable supergfxd.service
 ### 3. Reboot after installation
 
 ### 4. Remaining tools:
+
 ```bash
 sudo dnf install easyeffects iio-sensor-proxy swayidle
 ```
@@ -191,11 +202,11 @@ sudo dnf install easyeffects iio-sensor-proxy swayidle
 
 The application is available in the Arch User Repository. Install using your preferred AUR helper:
 
-| Package | Description |
-|---------|-------------|
-| `asus-hub` | Compiles the latest stable release from source |
+| Package        | Description                                              |
+| -------------- | -------------------------------------------------------- |
+| `asus-hub`     | Compiles the latest stable release from source           |
 | `asus-hub-bin` | Downloads and installs the pre-compiled binary (fastest) |
-| `asus-hub-git` | Compiles the latest commit from the main branch |
+| `asus-hub-git` | Compiles the latest commit from the main branch          |
 
 ```bash
 yay -S asus-hub-bin
@@ -218,11 +229,13 @@ sudo systemctl enable --now supergfxd.service
 Download the package matching your distribution from the [GitHub Releases](https://github.com/Traciges/asus-hub/releases) page:
 
 - **Fedora / RPM-based:**
+
   ```bash
   sudo dnf install ./asus-hub-1.0.6-1.x86_64.rpm
   ```
 
 - **Debian / Ubuntu / DEB-based:**
+
   ```bash
   sudo apt install ./asus-hub_1.0.6-1_amd64.deb
   ```
@@ -236,11 +249,13 @@ Download the package matching your distribution from the [GitHub Releases](https
 ### Uninstall
 
 - **Fedora, CentOS oder RHEL (via RPM/DNF):**
+
   ```bash
   sudo dnf remove asus-hub
   ```
 
 - **Ubuntu, Debian oder Linux Mint (via DEB/APT):**
+
   ```bash
   sudo apt remove asus-hub
   ```
