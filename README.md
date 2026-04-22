@@ -177,12 +177,6 @@ sudo dnf install gtk4-devel libadwaita-devel
 sudo pacman -S gtk4 libadwaita
 ```
 
-**NixOs**
-
-```bash
-nix develop
-```
-
 ### 2. Install external tools
 
 Most tools are already included with a standard Fedora KDE installation (`kscreen-doctor`, `kwriteconfig6`, `wpctl`). The following need to be installed manually: <br>
