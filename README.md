@@ -160,8 +160,9 @@ Other Linux distributions should work as long as the relevant dependencies can b
 
 ## Installation
 
-**Fedora (Copr - Community Maintained):**
+### Package Managers:
 
+**Fedora (Copr - Community Maintained)** <br>
 A community member has packaged Asus Hub for Fedora via Copr, providing automatic rebuilds and updates. <br>
 **Note:** This repository is maintained by the community [SkyR0ver](https://github.com/SkyR0ver/asus-hub-rpm), not officially by the upstream project. Currently supported on Fedora 43+.
 
@@ -172,8 +173,61 @@ sudo dnf install ayuz
 sudo systemctl enable --now supergfxd.service
 ```
 
-### 1. Prerequisites
+**Arch Linux (AUR)** <br>
+The application is available in the Arch User Repository. Install using your preferred AUR helper:
 
+| Package        | Description                                              |
+| -------------- | -------------------------------------------------------- |
+| `asus-hub`     | Compiles the latest stable release from source           |
+| `asus-hub-bin` | Downloads and installs the pre-compiled binary (fastest) |
+| `asus-hub-git` | Compiles the latest commit from the main branch          |
+
+```bash
+yay -S asus-hub
+```
+
+**NixOS (Flakes)** <br>
+Add `ayuz` to your `flake.nix` inputs: `ayuz.url = "github:Klbgr/Ayuz";`.
+
+- **NixOS Module (Recommended):** Automatically configures required system services (`asusd`, `supergfxd`), udev rules, and polkit policies.
+  ```nix
+  { inputs, ... }: {
+    imports = [ inputs.ayuz.nixosModules.default ];
+    services.ayuz.enable = true;
+    services.ayuz.supportMyAsusKey = true; # Rebind MyAsus/ROG key to launch Ayuz
+    services.ayuz.fnKeyMode = "shortcut"; # Set the initial Fn key lock state
+  }
+  ```
+- **Home Manager Module:** For per-user installation, optional autostart, and configuration.
+  ```nix
+  { inputs, ... }: {
+    imports = [ inputs.ayuz.homeManagerModules.default ];
+    programs.ayuz.enable = true;
+    programs.ayuz.autostart = true; # Start minimized on login
+    programs.ayuz.settings = {
+      # accepts either a Nix attribute set or a raw JSON string
+      language = "en";
+    };
+  }
+  ```
+- **Traditional (Flakeless) usage:** You can use `builtins.getFlake` to use the modules or package directly.
+  ```nix
+  { pkgs, ... }: 
+  let
+    ayuz-flake = builtins.getFlake "github:Klbgr/Ayuz";
+  in {
+    imports = [ ayuz-flake.nixosModules.default ];
+    services.ayuz = { ... };
+    home-manager.users.username = {
+      imports = [ ayuz-flake.homeManagerModules.default ];
+      programs.ayuz = { ... };
+    };
+  }
+  ```
+  
+### Install from GitHub Releases:
+
+### 1. Prerequisites
 **Note:** If you plan to use the AppImage (see Step 5), you can skip this step entirely. The AppImage already bundles all the necessary UI dependencies.
 
 - Rust toolchain (install via [rustup](https://rustup.rs))
@@ -213,62 +267,6 @@ sudo dnf install easyeffects iio-sensor-proxy swayidle brightnessctl playerctl
 ```
 
 ### 5. Download & Install
-
-**Arch Linux (AUR):**
-
-The application is available in the Arch User Repository. Install using your preferred AUR helper:
-
-| Package        | Description                                              |
-| -------------- | -------------------------------------------------------- |
-| `ayuz`     | Compiles the latest stable release from source           |
-| `ayuz-bin` | Downloads and installs the pre-compiled binary (fastest) |
-| `ayuz-git` | Compiles the latest commit from the main branch          |
-
-```bash
-yay -S ayuz-bin
-```
-
-```
-
-**NixOS (Flakes):**
-
-Add `ayuz` to your `flake.nix` inputs: `ayuz.url = "github:Klbgr/Ayuz";`.
-
-- **NixOS Module (Recommended):** Automatically configures required system services (`asusd`, `supergfxd`), udev rules, and polkit policies.
-  ```nix
-  { inputs, ... }: {
-    imports = [ inputs.ayuz.nixosModules.default ];
-    services.ayuz.enable = true;
-    services.ayuz.supportMyAsusKey = true; # Rebind MyAsus/ROG key to launch Ayuz
-    services.ayuz.fnKeyMode = "shortcut"; # Set the initial Fn key lock state
-  }
-  ```
-- **Home Manager Module:** For per-user installation, optional autostart, and configuration.
-  ```nix
-  { inputs, ... }: {
-    imports = [ inputs.ayuz.homeManagerModules.default ];
-    programs.ayuz.enable = true;
-    programs.ayuz.autostart = true; # Start minimized on login
-    programs.ayuz.settings = {
-      # accepts either a Nix attribute set or a raw JSON string
-      language = "en";
-    };
-  }
-  ```
-- **Traditional (Flakeless) usage:** You can use `builtins.getFlake` to use the modules or package directly.
-  ```nix
-  { pkgs, ... }: 
-  let
-    ayuz-flake = builtins.getFlake "github:Klbgr/Ayuz";
-  in {
-    imports = [ ayuz-flake.nixosModules.default ];
-    services.ayuz = { ... };
-    home-manager.users.username = {
-      imports = [ ayuz-flake.homeManagerModules.default ];
-      programs.ayuz = { ... };
-    };
-  }
-  ```
 
 **Manual Download:**
 
